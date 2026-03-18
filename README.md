@@ -35,20 +35,53 @@ Hệ thống RAG (Retrieval-Augmented Generation) đa phương tiện , cho phé
 ## 🛠️ Installation & Setup
 
 ### 1. Clone the repository
-```bash
-git clone [https://github.com/your-username/MultiModal-RAG-Gemini.git](https://github.com/your-username/MultiModal-RAG-Gemini.git)
-cd MultiModal-RAG-Gemini
-```
+
+git clone https://github.com/your-username/MultiModal-RAG-Gemini.git  
+cd MultiModal-RAG-Gemini  
+
+---
+
 ### 2. Create Virtual Environment
-python -m venv venv
-# On Windows:
-venv\Scripts\activate
-# On Linux/Mac:
-source venv/bin/activate
+
+python -m venv venv  
+
+- On Windows:  
+venv\Scripts\activate  
+
+- On Linux / Mac:  
+source venv/bin/activate  
+
+---
 
 ### 3. Install Dependencies
-pip install -r requirements.txt
+
+pip install -r requirements.txt  
+
+---
 
 ### 4. Environment Configuration
-GEMINI_API_KEY=your_gemini_api_key_here
-COHERE_API_KEY=your_cohere_api_key_here
+
+GEMINI_API_KEY=your_gemini_api_key_here  
+COHERE_API_KEY=your_cohere_api_key_here  
+
+---
+
+### 5. Run the Application
+
+streamlit run app.py  
+
+---
+
+## 📁 Project Structure
+
+RAG_Intro/  
+├── app.py                # Main Streamlit UI  
+├── src/  
+│   ├── process_pdf_files.py   # Partitioning & Chunking  
+│   ├── process_chunks.py      # Embedding & Vector Storage  
+│   ├── retrieval.py           # Hybrid Search & Reranking  
+│   ├── chain.py               # Prompt & LLM Chains  
+├── data/                 # Input PDF files  
+├── chroma_db/            # Local vector database  
+├── .env                  # API keys  
+├── requirements.txt      # Dependencies  
