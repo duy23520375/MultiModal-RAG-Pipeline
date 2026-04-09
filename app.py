@@ -82,7 +82,7 @@ if user_input := st.chat_input("Ask me anything about the document..."):
                     'input': user_input
                 }).content
 
-                # BƯỚC 2: Tìm kiếm & Rerank (Duy gọi hàm từ retrieval.py)
+                # BƯỚC 2: Tìm kiếm & Rerank 
                 # Lấy 10-20 cái rồi Cohere lọc còn 5
                 final_docs = get_reranked_documents(refined_query, st.session_state.ensemble_retriever)
                 
