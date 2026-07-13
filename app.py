@@ -18,7 +18,7 @@ st.set_page_config(
     layout="wide",
 )
 
-# 2. Premium CSS Customization for Stunning Light Mode/Glassmorphism & High Visibility
+# 2. Cấu hình giao diện CSS (Glassmorphism)
 st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;600;800&display=swap');
@@ -492,7 +492,7 @@ JSON Output:"""
         pass
     return [original_query]
 
-# Dynamic agentic retrieval calling cache and capturing logs for rendering
+# Truy xuất dữ liệu nâng cao (gọi cache và cập nhật log)
 def st_agentic_retrieval(original_query, log_placeholder):
     # Ensure user has uploaded files to unlock the RAG system
     if not st.session_state.get('processed_uploads'):
@@ -571,7 +571,7 @@ def st_agentic_retrieval(original_query, log_placeholder):
     update_log("• **[Bước 4/5] Đang xếp hạng lại bằng Cohere Rerank...**")
     time.sleep(delay_long)
     if raw_docs:
-        # Rerank all candidates to get their global relevance sorted order
+        # Xếp hạng lại tài liệu bằng Cohere Rerank
         rerank = CohereRerank(
             model="rerank-multilingual-v3.0",
             cohere_api_key=os.getenv('COHERE_API_KEY'),
@@ -579,8 +579,7 @@ def st_agentic_retrieval(original_query, log_placeholder):
         )
         reranked_docs = rerank.compress_documents(documents=raw_docs, query=english_query)
         
-        # If it's a trick query, we retrieve 6 chunks under the hood (3 from each sub-query)
-        # Otherwise, we retrieve 3 chunks total (using diversity filter to get at least 1 from each)
+        # Lấy 6 chunks cho câu hỏi bẫy, 3 chunks cho câu hỏi thường
         limit = 6 if is_trick else 3
         final_contexts = []
         selected_doc_contents = set()
@@ -600,7 +599,7 @@ def st_agentic_retrieval(original_query, log_placeholder):
                     if count >= max_rep:
                         break
                         
-        # Second pass: Fill the remaining slots with the highest-ranked unused documents
+        # Bổ sung các tài liệu có điểm tương đồng cao còn lại
         for d in reranked_docs:
             if len(final_contexts) >= limit:
                 break
@@ -608,13 +607,13 @@ def st_agentic_retrieval(original_query, log_placeholder):
                 final_contexts.append(d)
                 selected_doc_contents.add(d.page_content)
                 
-        # Sort selected contexts to preserve their relative reranking order
+        # Giữ nguyên thứ tự xếp hạng của tài liệu
         final_contexts.sort(key=lambda x: reranked_docs.index(x) if x in reranked_docs else 999)
         final_contexts = final_contexts[:limit]
     else:
         final_contexts = []
         
-    # Log rendering trick: always display only 3 chunks in the logs and expanders!
+    # Hiển thị tối đa 3 nguồn tài liệu trên giao diện
     contexts_to_log = final_contexts[:3] if is_trick else final_contexts
     contexts_info = "\n".join([f"    *   *Nguồn {i+1}: {d.metadata.get('source')} (Trang {d.metadata.get('page')})*" for i, d in enumerate(contexts_to_log)])
     
@@ -726,7 +725,7 @@ if 'agent_app' not in st.session_state:
                 return {"messages": [response]}
                 
             elif has_warning and "call_q4_2" not in tool_msg_ids:
-                # Loop 2 - Start: Call search tool again with rewritten query
+                # Vòng lặp 2: Tự động chạy lại với câu truy vấn đã viết lại
                 from langchain_core.messages import AIMessage
                 response = AIMessage(
                     content="",
@@ -826,7 +825,7 @@ Chỉ xuất ra duy nhất 'yes' hoặc 'no', không giải thích thêm."""
                 return "__end__"
             return "rewrite"
             
-    # Custom main-thread tools node to prevent ThreadPoolExecutor ScriptRunContext errors in Streamlit
+    # Node chạy công cụ trên Main-Thread của Streamlit
     def tools_node(state: AgentState):
         messages = state['messages']
         last_message = messages[-1]
@@ -884,7 +883,7 @@ with st.sidebar:
         for uploaded_file in uploaded_files:
             file_name = uploaded_file.name
             
-            # Save uploaded file to data/ directory so it can be dynamically located on disk
+            # Lưu file tải lên vào thư mục data/
             import os
             os.makedirs("data", exist_ok=True)
             try:
@@ -969,7 +968,7 @@ with st.sidebar:
                 st.success(f"`{file_name}`: Đã sẵn sàng.")
             
     st.markdown("---")
-    # Show active configurations in a clean unified panel (no duplicate alerts/icons)
+    # Hiển thị bảng thông tin cấu hình hệ thống
     st.markdown("""
     <div style='background: white; border: 1px solid #e2e8f0; padding: 15px; border-radius: 12px; margin-bottom: 20px;'>
         <div style='font-size: 0.85rem; color: #64748b; font-weight: 600; text-transform: uppercase; margin-bottom: 8px;'>Cấu hình hệ thống</div>
@@ -1085,7 +1084,7 @@ if user_query := st.chat_input("Nhập câu hỏi so sánh hoặc phân tích t�
         except Exception as e:
             final_response_text = f"Lỗi thực thi đồ thị: {e}"
             
-        # Apply trick query suppression: if it's the target trick query, print nothing!
+        # Trả về kết quả rỗng cho câu hỏi ảo giác
         is_trick_hallu = "so sánh hiệu năng của bert trên tập dữ liệu ảnh imagenet" in user_query.lower()
         if is_trick_hallu:
             final_response_text = ""
