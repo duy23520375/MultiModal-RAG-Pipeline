@@ -87,19 +87,31 @@ docker compose up --build -d
 
 ```text
 MultiModal-RAG-Pipeline/
-├── app.py                  # Giao diện chính Streamlit và luồng chạy đồ thị
-├── Dockerfile              # Docker đóng gói ứng dụng
-├── docker-compose.yml      # Cấu hình container chạy Docker compose
-├── .env.example            # Mẫu cấu hình biến môi trường
-├── requirements.txt        # Danh sách thư viện Python
-├── .gitignore              # Cấu hình các file bỏ qua khi git commit
-├── src/                    # Thư mục mã nguồn logic hệ thống
-│   ├── process_pdf_files.py # Cắt phân rã PDF bằng unstructured
-│   ├── process_chunks.py    # Xử lý embedding, tóm tắt và lưu VectorDB
-│   ├── retrieval.py         # Dịch thuật, phân rã và tìm kiếm Hybrid
-│   ├── chain.py             # Prompt template và khởi tạo LLM chain
-│   └── agent.py             # Cấu hình agent workflow phụ trợ
-├── data/                   # Thư mục tài liệu PDF mẫu và file kết quả
-├── finetuned_model/        # Thư mục mô hình embedding đã được fine-tune
-└── multi_modal_rag.ipynb   # Notebook hướng dẫn và đánh giá Ragas
+├── app.py                      # Giao diện chính Streamlit và luồng chạy đồ thị
+├── Dockerfile                  # Docker đóng gói ứng dụng
+├── docker-compose.yml          # Cấu hình container chạy Docker compose
+├── .env.example                # Mẫu cấu hình biến môi trường
+├── requirements.txt            # Danh sách thư viện Python
+├── .gitignore                  # Các file bỏ qua khi commit
+├── multi_modal_rag.ipynb       # Notebook chính chạy RAG và đánh giá Ragas
+├── Train_Emb_data.ipynb        # Notebook dùng để huấn luyện tinh chỉnh Embedding
+├── chunks_export.json          # File xuất dữ liệu các đoạn văn bản (chunks)
+├── chunks_train.json           # File xuất dữ liệu các đoạn văn bản dùng để train
+├── train_embedding_data.json   # Dữ liệu cặp câu hỏi/văn bản huấn luyện
+├── data_ragas.csv              # Bộ 200 câu hỏi test của Ragas
+├── ragas_evaluation_results.csv # Kết quả thẩm định chi tiết từ Ragas
+├── src/                        # Thư mục chứa mã nguồn logic
+│   ├── process_pdf_files.py    # Phân rã văn bản PDF bằng unstructured
+│   ├── process_chunks.py       # Embedding, tóm tắt và lưu VectorDB
+│   ├── retrieval.py            # Dịch thuật, phân rã và tìm kiếm Hybrid
+│   ├── chain.py                # Prompt template và khởi tạo LLM chain
+│   └── agent.py                # Cấu hình đồ thị LangGraph Agent
+├── data/                       # Thư mục tài liệu PDF mẫu dùng cho RAG
+│   ├── attention-is-all-you-need.pdf
+│   ├── bert.pdf
+│   ├── TransUnet.pdf
+│   ├── MultiresUnet.pdf
+│   └── TD3.pdf
+├── data_train_emb/             # Các tài liệu PDF dùng để train embedding
+└── finetuned_model/            # Thư mục mô hình embedding đã được fine-tune
 ```
