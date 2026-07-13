@@ -1,10 +1,10 @@
-# Multi-Modal RAG Assistant with Gemini 2.5 & LangGraph
+# Agentic Multi-Modal RAG Assistant with Gemini 2.5 & LangGraph
 
 [![Python Version](https://img.shields.io/badge/python-3.11-blue)](https://www.python.org/)
 [![Framework](https://img.shields.io/badge/framework-LangGraph--LangChain-green)](https://python.langchain.com/)
 [![LLM](https://img.shields.io/badge/LLM-Gemini%202.5%20Flash-red)](https://aistudio.google.com/)
 
-Hệ thống RAG (Retrieval-Augmented Generation) đa phương tiện tiên tiến, tích hợp đồ thị trạng thái Agentic Workflow bằng LangGraph. Hệ thống cho phép người dùng hội thoại với các tài liệu PDF phức tạp (chứa văn bản, bảng biểu HTML, hình ảnh Base64), hỗ trợ chống ảo giác (Self-Verification) và tự động viết lại truy vấn (Query Rewriting).
+Hệ thống **Agentic Multi-Modal RAG** (Retrieval-Augmented Generation đa phương tiện dạng Agent) tiên tiến, tích hợp đồ thị trạng thái Agentic Workflow bằng LangGraph. Hệ thống cho phép người dùng hội thoại với các tài liệu PDF phức tạp (chứa văn bản, bảng biểu HTML, hình ảnh Base64), hỗ trợ chống ảo giác (Self-Verification) và tự động viết lại truy vấn (Query Rewriting).
 
 ---
 
