@@ -1,87 +1,105 @@
-#  Multi-Modal RAG Assistant with Gemini 2.5 & LangChain
+# Multi-Modal RAG Assistant with Gemini 2.5 & LangGraph
 
-[![Python Version](https://img.shields.io/badge/python-3.10%2B-blue)](https://www.python.org/)
-[![Framework](https://img.shields.io/badge/framework-LangChain-green)](https://python.langchain.com/)
+[![Python Version](https://img.shields.io/badge/python-3.11-blue)](https://www.python.org/)
+[![Framework](https://img.shields.io/badge/framework-LangGraph--LangChain-green)](https://python.langchain.com/)
 [![LLM](https://img.shields.io/badge/LLM-Gemini%202.5%20Flash-red)](https://aistudio.google.com/)
 
-Hệ thống RAG (Retrieval-Augmented Generation) đa phương tiện , cho phép người dùng trò chuyện với tài liệu PDF phức tạp bao gồm văn bản, bảng biểu và hình ảnh. Sử dụng kiến trúc Hybrid Search kết hợp với Reranking để đạt độ chính xác tối ưu.
-
-
+Hệ thống RAG (Retrieval-Augmented Generation) đa phương tiện tiên tiến, tích hợp đồ thị trạng thái Agentic Workflow bằng LangGraph. Hệ thống cho phép người dùng hội thoại với các tài liệu PDF phức tạp (chứa văn bản, bảng biểu HTML, hình ảnh Base64), hỗ trợ chống ảo giác (Self-Verification) và tự động viết lại truy vấn (Query Rewriting).
 
 ---
 
-## 🌟 Key Features
+## 🌟 Tính năng chính
 
-- **Multi-Modal Processing**: Trích xuất và phân tích sâu sắc các Element (Text, Table, Image) từ PDF sử dụng thư viện `unstructured`.
-- **Hybrid Retrieval**: Kết hợp sức mạnh của **BM25** (Keyword search) và **Vector Search** (Semantic search) thông qua `EnsembleRetriever`.
-- **AI-Powered Summarization**: Tự động tóm tắt nội dung bảng biểu và mô tả hình ảnh bằng Gemini để tăng cường khả năng tìm kiếm (Indexing).
-- **Reranking**: Sử dụng **Cohere Rerank** (`rerank-multilingual-v3.0`) để tái sắp xếp kết quả, đảm bảo thông tin chính xác nhất được đưa vào Context.
-- **Contextual Query**: Tự động viết lại câu hỏi (Query Rewriting) dựa trên lịch sử trò chuyện để xử lý các câu hỏi phụ thuộc ngữ cảnh.
-- **Streamlit UI**: Giao diện người dùng trực quan, hỗ trợ Upload file và Chat thời gian thực.
+- **Xử lý Đa Phương Tiện (Multi-Modal)**: Phân tách chi tiết cấu trúc bảng (HTML) và trích xuất hình ảnh (Base64) bằng thư viện `unstructured`.
+- **Tập truy xuất phân cấp (Hierarchical RAG)**: Áp dụng `ParentDocumentRetriever` giúp lưu trữ các đoạn text con (Child Chunks) để tìm kiếm chính xác nhưng trả về ngữ cảnh lớn (Parent Chunks) cho LLM.
+- **Tìm kiếm kết hợp (Hybrid Search)**: Phối hợp sức mạnh của BM25 (truy vấn từ khóa) và Vector Semantic Search thông qua `EnsembleRetriever`.
+- **Tinh chỉnh Embedding (Fine-tuned Embedding)**: Tinh chỉnh mô hình `all-MiniLM-L6-v2` cho miền dữ liệu chuyên biệt để tối ưu hóa kết quả tìm kiếm ngữ nghĩa.
+- **Tái xếp hạng (Cohere Rerank)**: Sử dụng mô hình `rerank-multilingual-v3.0` để tối ưu hóa độ liên quan của ngữ cảnh.
+- **Đồ thị Agent chống ảo giác (LangGraph self-verification)**: Node Grader thẩm định ảo giác và Node Rewrite viết lại câu hỏi nếu phát hiện ảo giác.
+- **Trích dẫn trực quan (Visual Citations)**: Hiển thị trích dẫn trang PDF trực quan trong hộp hội thoại Chat.
 
 ---
 
-## 🏗️ Architecture Stack
+## 🏗️ Công nghệ sử dụng
 
-- **Orchestration**: LangChain
-- **LLM**: Google Gemini 2.5 Flash
+- **Workflow Orchestration**: LangGraph & LangChain
+- **LLM**: Google Gemini 2.5 Flash (hỗ trợ xoay vòng key thông minh)
 - **Vector Database**: ChromaDB
-- **Embedding**: HuggingFace (`all-MiniLM-L6-v2`)
-- **PDF Partitioning**: Unstructured (Hi-Res Strategy)
-- **Reranker**: Cohere AI
+- **Embedding Model**: Fine-tuned `all-MiniLM-L6-v2`
+- **Reranker**: Cohere Rerank 3.0
+- **Web Search API**: Tavily Search
 
 ---
 
-## 🛠️ Installation & Setup
+## 🛠️ Hướng dẫn cài đặt & Chạy ứng dụng
 
-### 1. Clone the repository
+### Cách 1: Chạy trực tiếp trên máy (Local)
 
-git clone https://github.com/your-username/MultiModal-RAG-Gemini.git  
-cd MultiModal-RAG-Gemini  
+1. **Clone repository:**
+   ```bash
+   git clone https://github.com/duy23520375/MultiModal-RAG-Pipeline.git
+   cd MultiModal-RAG-Pipeline
+   ```
+
+2. **Khởi tạo môi trường ảo Python 3.11:**
+   ```bash
+   python -m venv venv
+   # Windows:
+   venv\Scripts\activate
+   # Linux/Mac:
+   source venv/bin/activate
+   ```
+
+3. **Cài đặt các thư viện:**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. **Cấu hình API Keys:**
+   Tạo file `.env` dựa theo file `.env.example` và điền key của bạn:
+   ```env
+   COHERE_API_KEY=your_cohere_key
+   TAVILY_API_KEY=your_tavily_key
+   GEMINI_KEY_1=your_gemini_key_1
+   GEMINI_KEY_2=your_gemini_key_2
+   ```
+
+5. **Chạy ứng dụng:**
+   ```bash
+   streamlit run app.py
+   ```
 
 ---
 
-### 2. Create Virtual Environment
+### Cách 2: Chạy bằng Docker (Khuyên dùng)
 
-python -m venv venv  
+Dự án đã được đóng gói Docker hoàn chỉnh (tự động cài đặt poppler, tesseract-ocr, libmagic cho `unstructured`).
 
-- On Windows:  
-venv\Scripts\activate  
-
-- On Linux / Mac:  
-source venv/bin/activate  
-
----
-
-### 3. Install Dependencies
-
-pip install -r requirements.txt  
+Khởi chạy bằng Docker Compose:
+```bash
+docker compose up --build -d
+```
+Ứng dụng sẽ chạy tại địa chỉ: `http://localhost:8501`.
 
 ---
 
-### 4. Environment Configuration
+## 📁 Cấu trúc thư mục dự án
 
-GEMINI_API_KEY=your_gemini_api_key_here  
-COHERE_API_KEY=your_cohere_api_key_here  
-
----
-
-### 5. Run the Application
-
-streamlit run app.py  
-
----
-
-## 📁 Project Structure
-
-RAG_Intro/  
-├── app.py                # Main Streamlit UI  
-├── src/  
-│   ├── process_pdf_files.py   # Partitioning & Chunking  
-│   ├── process_chunks.py      # Embedding & Vector Storage  
-│   ├── retrieval.py           # Hybrid Search & Reranking  
-│   ├── chain.py               # Prompt & LLM Chains  
-├── data/                 # Input PDF files  
-├── chroma_db/            # Local vector database  
-├── .env                  # API keys  
-├── requirements.txt      # Dependencies  
+```text
+MultiModal-RAG-Pipeline/
+├── app.py                  # Giao diện chính Streamlit và luồng chạy đồ thị
+├── Dockerfile              # Docker đóng gói ứng dụng
+├── docker-compose.yml      # Cấu hình container chạy Docker compose
+├── .env.example            # Mẫu cấu hình biến môi trường
+├── requirements.txt        # Danh sách thư viện Python
+├── .gitignore              # Cấu hình các file bỏ qua khi git commit
+├── src/                    # Thư mục mã nguồn logic hệ thống
+│   ├── process_pdf_files.py # Cắt phân rã PDF bằng unstructured
+│   ├── process_chunks.py    # Xử lý embedding, tóm tắt và lưu VectorDB
+│   ├── retrieval.py         # Dịch thuật, phân rã và tìm kiếm Hybrid
+│   ├── chain.py             # Prompt template và khởi tạo LLM chain
+│   └── agent.py             # Cấu hình agent workflow phụ trợ
+├── data/                   # Thư mục tài liệu PDF mẫu và file kết quả
+├── finetuned_model/        # Thư mục mô hình embedding đã được fine-tune
+└── multi_modal_rag.ipynb   # Notebook hướng dẫn và đánh giá Ragas
+```
