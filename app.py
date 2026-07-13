@@ -691,60 +691,6 @@ if 'agent_app' not in st.session_state:
     def call_model(state: AgentState):
         messages = state['messages']
         
-        # Intercept for Q4 (ImageNet target query)
-        user_q = ""
-        for m in messages:
-            if getattr(m, 'type', '') == 'human':
-                user_q = getattr(m, 'content', '')
-                break
-                
-        is_trick_hallu = "so sánh hiệu năng của bert trên tập dữ liệu ảnh imagenet" in user_q.lower()
-        if is_trick_hallu:
-            has_warning = any("CẢNH BÁO" in getattr(m, 'content', '') for m in messages)
-            tool_msg_ids = [getattr(m, 'tool_call_id', '') for m in messages if m.type == 'tool' or type(m).__name__ in ('ToolMessage', 'ToolMessageChunk')]
-            
-            if not tool_msg_ids:
-                # Loop 1 - Start: Call internal search tool
-                from langchain_core.messages import AIMessage
-                response = AIMessage(
-                    content="",
-                    tool_calls=[{
-                        "name": "internal_pdf_search",
-                        "args": {"query": user_q},
-                        "id": "call_q4_1"
-                    }]
-                )
-                return {"messages": [response]}
-                
-            elif "call_q4_1" in tool_msg_ids and not has_warning:
-                # Loop 1 - Post search: return draft response
-                from langchain_core.messages import AIMessage
-                response = AIMessage(
-                    content="Dựa trên tài liệu, BERT đạt hiệu năng cao trên tập dữ liệu ảnh ImageNet so với TransUNet nhờ kiến trúc Transformer tự chú ý..."
-                )
-                return {"messages": [response]}
-                
-            elif has_warning and "call_q4_2" not in tool_msg_ids:
-                # Vòng lặp 2: Tự động chạy lại với câu truy vấn đã viết lại
-                from langchain_core.messages import AIMessage
-                response = AIMessage(
-                    content="",
-                    tool_calls=[{
-                        "name": "internal_pdf_search",
-                        "args": {"query": "BERT model performance on ImageNet image dataset and TransUNet network architecture details"},
-                        "id": "call_q4_2"
-                    }]
-                )
-                return {"messages": [response]}
-                
-            else:
-                # Loop 2 - Post search: return second draft response
-                from langchain_core.messages import AIMessage
-                response = AIMessage(
-                    content="Theo tài liệu mới truy xuất, hiệu năng của BERT trên ImageNet vẫn vượt trội..."
-                )
-                return {"messages": [response]}
-
         system_prompt = SystemMessage(content=(
             "Bạn là một trợ lý AI thông minh chuyên phân tích tài liệu khoa học.\n"
             "Nhiệm vụ của bạn là trả lời các câu hỏi của người dùng bằng tiếng Việt.\n"
