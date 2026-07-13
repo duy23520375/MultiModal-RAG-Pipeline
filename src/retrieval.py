@@ -108,6 +108,7 @@ def translate_query_to_english(query: str) -> str:
         return "BERT model performance on ImageNet image dataset and TransUNet network architecture details"
 
     cache_file = 'cache/translation_cache.json'
+    os.makedirs(os.path.dirname(cache_file), exist_ok=True)
     cache = {}
     if os.path.exists(cache_file):
         try:
