@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  rag-app:
+    build: .
+    container_name: multimodal-rag-app
+    ports:
+      - "8501:8501"
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+      # Exclude node_modules or venv from host mapping if present
+      - /app/venv/
+    restart: unless-stopped

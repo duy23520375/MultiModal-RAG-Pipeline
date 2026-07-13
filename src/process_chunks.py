@@ -105,20 +105,47 @@ def summarise_chunks(chunks):
   print(f"Finished ! Process {len(langchain_documents)} chunks")
   return langchain_documents
 
-def create_vector_store(chunks, persist_directory='chroma_db/db'):
-  print("Creating Database...")
+def create_vector_store(chunks, persist_directory='chroma_db/child_db'):
+  print("Creating Hierarchical Database...")
   embedding_model = HuggingFaceEmbeddings(
     model_name= "sentence-transformers/all-MiniLM-L6-v2",
     model_kwargs= {'device': 'cpu'}
   )
-  db = Chroma.from_documents(
-    documents= chunks,
+  
+  # 1. VectorDB lưu các Child Chunks
+  child_db = Chroma(
+    collection_name="split_parents",
     persist_directory=persist_directory,
-    embedding= embedding_model,
+    embedding=embedding_model,
     collection_metadata={'knsw:space': 'cosine'}
   )
-  print(f'Storing {len(chunks)} in Database')
-  return db
+  
+  from langchain.storage import InMemoryStore
+  from langchain.text_splitter import RecursiveCharacterTextSplitter
+  from langchain.retrievers import ParentDocumentRetriever
+  import pickle
+  
+  # 2. Store lưu các Parent Chunks
+  store = InMemoryStore()
+  child_splitter = RecursiveCharacterTextSplitter(chunk_size=400, chunk_overlap=50)
+  
+  # 3. Gắn kết Parent và Child
+  parent_retriever = ParentDocumentRetriever(
+    vectorstore=child_db, 
+    docstore=store, 
+    child_splitter=child_splitter
+  )
+  
+  print(f'Băm nhỏ và Storing {len(chunks)} Parent Chunks vào Database')
+  parent_retriever.add_documents(chunks, ids=None)
+  
+  # 4. Lưu Parent Store xuống ổ cứng để không bị mất khi tắt app
+  import os
+  os.makedirs('chroma_db', exist_ok=True)
+  with open('chroma_db/parent_store.pkl', 'wb') as f:
+      pickle.dump(store.store, f)
+      
+  return child_db
 
 def embedding_storing(chunks):
   summarised_chunks = summarise_chunks(chunks)

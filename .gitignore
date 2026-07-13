@@ -1,7 +1,23 @@
+# User environment
 .env
-chroma_db/
-__pycache__/
+
+# Virtual environment and python caches
 venv/
+__pycache__/
 *.pyc
-.Ds_store
+.DS_Store
+
+# Streamlit caches and runtime DBs
+.streamlit/
+chroma_db/
 db/
+cache/
+
+# Temporary development files
+scratch/
+*.log
+cell*_def.txt
+ch1_raw.txt
+graph_def_raw.txt
+state_def_raw.txt
+references_*.txt
